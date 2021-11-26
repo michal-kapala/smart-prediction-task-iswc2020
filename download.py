@@ -1,8 +1,10 @@
 import urllib.request as urllib
 
+
 def download(url, files):
     for f in files:
         urllib.urlretrieve(url + f, f)
+
 
 # DBpedia
 url = "https://raw.githubusercontent.com/smart-task/smart-dataset/master/datasets/DBpedia/"
