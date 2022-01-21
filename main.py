@@ -40,7 +40,7 @@ def prepare_dataset_wd(df):
 def tokenize(df):
     cv = CountVectorizer(stop_words='english')
     cv_matrix = cv.fit_transform(df['question'])
-    df_dtm = pd.DataFrame(cv_matrix.toarray(), index=df['id'].values, columns=cv.get_feature_names())
+    df_dtm = pd.DataFrame(cv_matrix.toarray(), index=df['id'].values, columns=cv.get_feature_names_out())
     return df_dtm
 
 
@@ -53,8 +53,8 @@ tokenized_wd_df = tokenize(dataset_wd_df)                       # id pytania / z
 tokenized_wd_df_empty = tokenized_wd_df.iloc[0:0]               # same nagłówki
 dataset_wd_df = dataset_wd_df.drop(columns=["question"])        # dataset_wd_df bez pytania
 
-X = dataset_wd_df.drop(['id', 'category_x'], axis=1).to_numpy()
-y = tokenized_wd_df.to_numpy()
+X = dataset_wd_df.head(1000).drop(['id', 'category_x'], axis=1).to_numpy()
+y = tokenized_wd_df.head(1000).to_numpy()
 
 clf = RandomForestClassifier(max_depth=2, n_estimators=20, verbose=2)
 clf.fit(X, y)
@@ -62,9 +62,9 @@ clf.fit(X, y)
 #Testowy dataset
 test_wd = load_dataset("lcquad2_anstype_wikidata_test_gold.json")
 
-test_wd_df = prepare_dataset_wd(pd.DataFrame(test_wd))
+test_wd_df = prepare_dataset_wd(pd.DataFrame(test_wd)).head(1000)
 test_wd_df = dataset_wd_df_empty.append(test_wd_df, sort=False)
-token_test_wd_df = tokenize(test_wd_df)
+token_test_wd_df = tokenize(test_wd_df).head(1000)
 token_test_wd_df = tokenized_wd_df_empty.append(token_test_wd_df, sort=False).fillna(0)
 test_wd_df = test_wd_df.drop(columns=["question"]).fillna(0)
 
