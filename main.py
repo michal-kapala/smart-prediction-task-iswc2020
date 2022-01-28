@@ -17,7 +17,7 @@ sparql_endpoint = "https://query.wikidata.org/sparql" if is_dbpedia == False els
 sparql = SPARQLWrapper(sparql_endpoint)
 nltk.download('stopwords')
 nltk.download('punkt')
-stop_words = set(stopwords.words('english'))
+stop_words = set(stopwords.words('english')) - {'what', 'which', 'whose', 'why', 'when', 'where'}
 table = str.maketrans('','', string.punctuation)
 
 # ETL

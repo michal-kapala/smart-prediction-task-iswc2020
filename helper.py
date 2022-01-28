@@ -3,8 +3,6 @@ import json
 import pandas as pd
 from nltk.tokenize import word_tokenize
 
-
-
 # loads a JSON dataset into a DataFrame
 def load_dataset(filename, is_dbpedia):
     root_dir = os.path.dirname(__file__)
