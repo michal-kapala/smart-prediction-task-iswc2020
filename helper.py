@@ -74,3 +74,12 @@ def print_raw_json(qresult):
         print(res)
         # For entity querying:
         # print('Type: ' + res['itemLabel']['type'] + '\tValue: ' + res['itemLabel']['value'])
+
+def find_question_word(tokens):
+    for t in tokens:
+        if t == tokens[0] and t == 'Is':
+            return t
+        if t.find('Wh', 0, 2) > -1:
+            return t
+    return 'Other'
+
