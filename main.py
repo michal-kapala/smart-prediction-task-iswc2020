@@ -17,6 +17,7 @@ sparql_endpoint = "https://query.wikidata.org/sparql" if is_dbpedia == False els
 sparql = SPARQLWrapper(sparql_endpoint)
 nltk.download('stopwords')
 nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
 stop_words = set(stopwords.words('english')) - {'what', 'which', 'whose', 'why', 'when', 'where', 'who'}
 table = str.maketrans('','', string.punctuation)
 
@@ -27,15 +28,18 @@ categories_wd = load_wikidata_categories()
 # Question text preprocessing
 tokens_column = []
 question_words_column = []
+postags_column = []
 
 for index, row in dataset_df.iterrows():
     question = row['question']
     tokens = tokenize(question, stop_words, table)
     tokens_column.append(tokens)
     question_words_column.append(find_question_word(tokens))
+    postags_column.append(nltk.pos_tag(tokens))
 
 dataset_df['ordered_tokens'] = tokens_column
 dataset_df['question_word'] = question_words_column
+dataset_df['pos_tags'] = postags_column
 print(dataset_df)
 
 # Query examples

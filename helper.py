@@ -3,6 +3,7 @@ import json
 import pandas as pd
 from nltk.tokenize import word_tokenize
 
+
 # loads a JSON dataset into a DataFrame
 def load_dataset(filename, is_dbpedia):
     root_dir = os.path.dirname(__file__)
@@ -57,6 +58,7 @@ def sparql2df_entities(qresult):
         id+=1
     return df
 
+
 # Converts SPARQL query to custom DataFrame for get_types query
 def sparql2df_types(qresult):
     df = pd.DataFrame(columns=['type'])
@@ -68,6 +70,7 @@ def sparql2df_types(qresult):
         id+=1
     return df
 
+
 #Prints raw JSON from SPARQLWrapper
 def print_raw_json(qresult):
     for res in qresult['results']['bindings']:
@@ -75,10 +78,14 @@ def print_raw_json(qresult):
         # For entity querying:
         # print('Type: ' + res['itemLabel']['type'] + '\tValue: ' + res['itemLabel']['value'])
 
+
+# Processes tokenized questions (in original word order)
 def find_question_word(tokens):
     for t in tokens:
-        if t == tokens[0] and t == 'Is':
+        # 'to be' questions (boolean type)
+        if t == tokens[0] and (t in ['Is', 'Are', 'Am']):
             return t
+        # 'wh-' questions
         if t.find('Wh', 0, 2) > -1:
             return t
     return 'Other'
