@@ -23,7 +23,9 @@ table = str.maketrans('','', string.punctuation)
 
 # ETL
 dataset_df = load_dataset(dataset_file, is_dbpedia)
-categories_wd = load_wikidata_categories()
+# For performance reasons only
+dataset_df = dataset_df.head(100)
+categories = load_wikidata_categories()
 
 # Question text preprocessing
 tokens_column = []
@@ -42,6 +44,49 @@ dataset_df['question_word'] = question_words_column
 dataset_df['pos_tags'] = postags_column
 print(dataset_df)
 
+# Select the words for SPARQL querying
+qcandidates = []
+for index, row in dataset_df.iterrows():
+    # Search for questions about resource type
+    if row['category'] == 'resource':
+        candidate_tokens = []
+        for token in row['ordered_tokens']:
+            # Qualify the token if it is a noun or verb
+            if token != row['question_word'] and is_noun(token, row['pos_tags']):
+                candidate_tokens.append(token)
+        qcandidates.append(candidate_tokens)
+    # Ignore literal and boolean questions processing
+    else:
+        qcandidates.append([])
+
+dataset_df['candidates'] = qcandidates
+print(dataset_df)
+
+# Get candidates Wikidata IDs (Q-items) from categories set
+qitems_column = []
+for index, row in dataset_df.iterrows():
+    # Search for potentially non-empty candidate lists
+    if row['category'] == 'resource':
+        qitems = []
+        # For every candidate
+        if(row['candidates'] != []):
+            for c in row['candidates']:
+                # Search through category descriptions
+                for index2, cat_row in categories.iterrows():
+                    # If the candidate is found in the description, save the qitem id
+                    if cat_row['category'].find(c) or cat_row['category'].find(c.lower()):
+                        qitems.append(cat_row['wiki_id'])
+        # Remove duplicate ids for the same question
+        qitems = list(dict.fromkeys(qitems))
+        qitems_column.append(qitems)
+    # Ignore other questions
+    else:
+        qitems_column.append([])
+
+dataset_df['cand_types'] = qitems_column
+print(dataset_df)
+
+
 # Query examples
 
 # Query for entities which are 'instance-of' of type_id
@@ -51,6 +96,8 @@ print(dataset_df)
 # Query for entity types of an object specified by the url
 # Example url: http://www.wikidata.org/entity/Q34172
 # print(get_types_for_entity_url(sparql, 'http://www.wikidata.org/entity/Q34172'))
+
+
 
 
 

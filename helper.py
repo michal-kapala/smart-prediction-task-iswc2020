@@ -90,3 +90,21 @@ def find_question_word(tokens):
             return t
     return 'Other'
 
+
+# Checks noun ntlk tags
+def is_noun(token, tags):
+    for tag in tags:
+        if token == tag[0]:
+            if tag[1] in ['NN', 'NNS', 'NNPS', 'NNP']:
+                return True
+    return False
+
+
+# Checks verb ntlk tags
+def is_verb(token, tags):
+    for tag in tags:
+        if token == tag[0]:
+            # , 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ'
+            if tag[1] in ['VB']:
+                return True
+    return False
