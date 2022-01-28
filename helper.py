@@ -35,7 +35,7 @@ def prepare_dataset_wd(df):
     return type_df
 
 
-# Tokenizes all questions (question's word order is lost)
+# Tokenizes a sentence (question's word order is preserved)
 def tokenize(text, stops, table):
     text = word_tokenize(text)
     text = [w.translate(table) for w in text]
@@ -71,7 +71,7 @@ def sparql2df_types(qresult):
     return df
 
 
-#Prints raw JSON from SPARQLWrapper
+# Prints raw JSON from SPARQLWrapper
 def print_raw_json(qresult):
     for res in qresult['results']['bindings']:
         print(res)
